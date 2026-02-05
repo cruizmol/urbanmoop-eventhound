@@ -283,6 +283,34 @@ npm test            # Tests
 6. **Create PR** with complete template
 7. **Wait for review** and CI/CD to pass
 
+## Git & PR Workflow
+
+### Branch Naming
+
+```bash
+# Features/bugs (ALWAYS include issue number):
+feature/issue-N-descripción-corta
+# Example: feature/issue-2-add-linting-formatting
+
+# Docs (no issue required):
+docs/descripción-corta
+
+# Chores (no issue required):
+chore/descripción-corta
+```
+
+### Merge Strategy
+
+- **Features/Issues:** Use `Merge commit` (preserve full history, easy revert)
+- **Hotfixes/Typos:** Use `Squash and merge` (clean linear history)
+- **NEVER:** Push directly to main - always create PR
+- **PR Title:** Must match branch name
+- **Closing:** Use `Closes #N` in PR description for auto-close
+
+See full conventions in [docs/CONVENTIONS.md](../docs/CONVENTIONS.md).
+
+Check [docs/CONVENTIONS.md](../docs/CONVENTIONS.md#labels-establecidos) for label system (`area:*`, `prio:*`, `type:*`).
+
 ---
 
 **Remember:** This is an event-driven system. Always think in terms of **asynchronous messages**, **single writer**, and **agnostic contracts**. 🚀
