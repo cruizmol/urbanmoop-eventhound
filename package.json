@@ -1,0 +1,55 @@
+{
+  "name": "eventhound",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Event aggregation platform with intelligent web scraping",
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:infra": "docker-compose -f docker/docker-compose.dev.yml up -d",
+    "dev:infra:down": "docker-compose -f docker/docker-compose.dev.yml down",
+    "dev:logs": "docker-compose -f docker/docker-compose.dev.yml logs -f",
+    "db:migrate": "echo 'Run migrations manually with psql'",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "jest --testPathPattern=e2e",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "@types/jest": "^29.5.12"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "keywords": [
+    "events",
+    "scraping",
+    "crawlee",
+    "event-driven",
+    "microservices",
+    "rabbitmq",
+    "postgresql"
+  ],
+  "author": "Carlos Ruiz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cruizmol/urbanmoop-eventhound.git"
+  }
+}
