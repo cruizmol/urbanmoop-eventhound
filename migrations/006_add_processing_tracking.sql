@@ -76,6 +76,7 @@ BEGIN
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'pages_status_check'
         AND table_schema = 'webscraping'
+        AND table_name = 'pages'
     ) THEN
         ALTER TABLE webscraping.pages DROP CONSTRAINT pages_status_check;
     END IF;
@@ -88,6 +89,7 @@ BEGIN
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_pages_status'
         AND table_schema = 'webscraping'
+        AND table_name = 'pages'
     ) THEN
         ALTER TABLE webscraping.pages
         ADD CONSTRAINT fk_pages_status
@@ -152,25 +154,25 @@ CREATE TABLE IF NOT EXISTS webscraping.page_processing_history (
 );
 
 -- Índices para page_processing_history
-CREATE INDEX idx_page_processing_history_page_id
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_page_id
 ON webscraping.page_processing_history(page_id);
 
-CREATE INDEX idx_page_processing_history_correlation_id
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_correlation_id
 ON webscraping.page_processing_history(correlation_id)
 WHERE correlation_id IS NOT NULL;
 
-CREATE INDEX idx_page_processing_history_message_type
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_message_type
 ON webscraping.page_processing_history(message_type);
 
-CREATE INDEX idx_page_processing_history_occurred_at
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_occurred_at
 ON webscraping.page_processing_history(occurred_at DESC);
 
-CREATE INDEX idx_page_processing_history_errors
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_errors
 ON webscraping.page_processing_history(error_code)
 WHERE error_code IS NOT NULL;
 
 -- Índice compuesto para queries de debugging
-CREATE INDEX idx_page_processing_history_page_time
+CREATE INDEX IF NOT EXISTS idx_page_processing_history_page_time
 ON webscraping.page_processing_history(page_id, occurred_at DESC);
 
 COMMENT ON TABLE webscraping.page_processing_history IS 'Historial de procesamiento de páginas - cada fila representa un evento del sistema';
