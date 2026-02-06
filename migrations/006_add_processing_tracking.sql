@@ -218,13 +218,13 @@ INSERT INTO webscraping.page_status_transitions (from_status, to_status, trigger
 ('classified_event', 'extracting', 'cmd.event.extract', 'Inicio de extracción'),
 
 -- Desde extracting
-('extracting', 'processed', 'evt.event.extracted', 'Extracción exitosa'),
+('extracting', 'processed', 'evt.page.processed', 'Extracción exitosa'),
 ('extracting', 'duplicate', 'evt.event.duplicate', 'Evento duplicado'),
 ('extracting', 'extraction_failed', 'evt.event.extraction_failed', 'Error en extracción'),
 
 -- Retry desde errores (transiciones manuales)
-('scrape_failed', 'pending', 'cmd.page.retry', 'Reintentar scraping'),
-('extraction_failed', 'classified_event', 'cmd.page.retry', 'Reintentar extracción')
+('scrape_failed', 'pending', 'cmd.page.scrape', 'Reintentar scraping'),
+('extraction_failed', 'classified_event', 'cmd.event.extract', 'Reintentar extracción')
 ON CONFLICT (from_status, to_status) DO NOTHING;
 
 -- ============================================================================
@@ -299,8 +299,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions TO s
 GRANT USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq TO service_role;
 GRANT USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq TO service_role;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON webscraping.page_statuses TO webscraper;
-GRANT SELECT, INSERT, UPDATE, DELETE ON webscraping.page_processing_history TO webscraper;
-GRANT SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions TO webscraper;
-GRANT USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq TO webscraper;
-GRANT USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq TO webscraper;
+-- Solo SELECT para webscraper (Single Writer Principle - solo Event Processor escribe)
+GRANT SELECT ON webscraping.page_statuses TO webscraper;
+GRANT SELECT ON webscraping.page_processing_history TO webscraper;
+GRANT SELECT ON webscraping.page_status_transitions TO webscraper;

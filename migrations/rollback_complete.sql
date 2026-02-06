@@ -40,27 +40,25 @@ DO $$
 BEGIN
     -- Revocar permisos sólo si las tablas/secuencias existen para mantener el rollback idempotente
     IF to_regclass('webscraping.page_statuses') IS NOT NULL THEN
-        REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_statuses FROM webscraper;
+        REVOKE SELECT ON webscraping.page_statuses FROM webscraper;
         REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_statuses FROM service_role;
     END IF;
 
     IF to_regclass('webscraping.page_processing_history') IS NOT NULL THEN
-        REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_processing_history FROM webscraper;
+        REVOKE SELECT ON webscraping.page_processing_history FROM webscraper;
         REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_processing_history FROM service_role;
     END IF;
 
     IF to_regclass('webscraping.page_status_transitions') IS NOT NULL THEN
-        REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions FROM webscraper;
+        REVOKE SELECT ON webscraping.page_status_transitions FROM webscraper;
         REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions FROM service_role;
     END IF;
 
     IF to_regclass('webscraping.page_processing_history_id_seq') IS NOT NULL THEN
-        REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq FROM webscraper;
         REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq FROM service_role;
     END IF;
 
     IF to_regclass('webscraping.page_status_transitions_id_seq') IS NOT NULL THEN
-        REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq FROM webscraper;
         REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq FROM service_role;
     END IF;
 END;
