@@ -1253,31 +1253,22 @@ DROP COLUMN IF EXISTS extraction_confidence,
 DROP COLUMN IF EXISTS extraction_method;
 ```
 
-### rollback_006.sql
+### Rollback para Migración 006
+
+**Nota:** El rollback de la migración 006 está integrado en `migrations/rollback_complete.sql` en lugar de un archivo separado `rollback_006.sql`, siguiendo la estrategia de rollback unificado del proyecto.
+
+El rollback completo incluye las siguientes operaciones específicas de la migración 006:
 
 ```sql
--- Rollback de migración 006
-DROP VIEW IF EXISTS webscraping.source_processing_stats CASCADE;
-DROP TABLE IF EXISTS webscraping.page_status_transitions CASCADE;
-DROP TABLE IF EXISTS webscraping.page_processing_history CASCADE;
-DROP TABLE IF EXISTS webscraping.page_statuses CASCADE;
-DROP FUNCTION IF EXISTS webscraping.validate_page_status_transition CASCADE;
-
-ALTER TABLE webscraping.pages
-DROP COLUMN IF EXISTS correlation_id,
-DROP COLUMN IF EXISTS last_message_id,
-DROP COLUMN IF EXISTS last_message_type,
-DROP COLUMN IF EXISTS processing_started_at,
-DROP COLUMN IF EXISTS processing_completed_at,
-DROP COLUMN IF EXISTS scrape_started_at,
-DROP COLUMN IF EXISTS scrape_completed_at,
-DROP COLUMN IF EXISTS response_time_ms,
-DROP COLUMN IF EXISTS crawler_type,
-DROP COLUMN IF EXISTS retries_count,
-DROP COLUMN IF EXISTS last_error_code,
-DROP COLUMN IF EXISTS last_error_message,
-DROP COLUMN IF EXISTS last_error_at;
+-- REVOCAR PERMISOS (con checks de existencia)
+-- ELIMINAR VISTA source_processing_stats
+-- ELIMINAR FUNCIÓN validate_page_status_transition()
+-- ELIMINAR CONSTRAINT fk_pages_status
+-- ELIMINAR COLUMNAS de pages (correlation_id, timestamps, metadata, errors)
+-- ELIMINAR TABLAS page_status_transitions, page_processing_history, page_statuses
 ```
+
+Ver `migrations/rollback_complete.sql` para el script completo de rollback.
 
 ---
 
