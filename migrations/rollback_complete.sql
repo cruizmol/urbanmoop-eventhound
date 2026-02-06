@@ -34,8 +34,29 @@ SELECT * FROM webscraping.parsing_rules WHERE is_active = true;
 */
 
 -- ============================================================================
+-- REVOCAR PERMISOS (Migration 006)
+-- ============================================================================
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_statuses FROM webscraper;
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_processing_history FROM webscraper;
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions FROM webscraper;
+REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq FROM webscraper;
+REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq FROM webscraper;
+
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_statuses FROM service_role;
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_processing_history FROM service_role;
+REVOKE SELECT, INSERT, UPDATE, DELETE ON webscraping.page_status_transitions FROM service_role;
+REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_processing_history_id_seq FROM service_role;
+REVOKE USAGE, SELECT ON SEQUENCE webscraping.page_status_transitions_id_seq FROM service_role;
+
+-- ============================================================================
+-- ELIMINAR VISTAS
+-- ============================================================================
+DROP VIEW IF EXISTS webscraping.source_processing_stats;
+
+-- ============================================================================
 -- ELIMINAR FUNCIONES
 -- ============================================================================
+DROP FUNCTION IF EXISTS webscraping.validate_page_status_transition();
 DROP FUNCTION IF EXISTS webscraping.get_schema_stats();
 DROP FUNCTION IF EXISTS webscraping.apply_text_transformation(TEXT, INTEGER, VARCHAR);
 DROP FUNCTION IF EXISTS webscraping.get_parsing_rules(INTEGER, VARCHAR, VARCHAR);
@@ -64,6 +85,38 @@ DROP TABLE IF EXISTS webscraping.related_links CASCADE;
 -- Eliminar tablas de contenido principal
 DROP TABLE IF EXISTS webscraping.posts CASCADE;
 DROP TABLE IF EXISTS webscraping.events CASCADE;
+
+-- Eliminar foreign keys y columnas de pages (migration 006)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_pages_status'
+        AND table_schema = 'webscraping'
+    ) THEN
+        ALTER TABLE webscraping.pages DROP CONSTRAINT fk_pages_status;
+    END IF;
+END $$;
+
+ALTER TABLE webscraping.pages
+DROP COLUMN IF EXISTS last_error_at,
+DROP COLUMN IF EXISTS last_error_message,
+DROP COLUMN IF EXISTS last_error_code,
+DROP COLUMN IF EXISTS retries_count,
+DROP COLUMN IF EXISTS crawler_type,
+DROP COLUMN IF EXISTS response_time_ms,
+DROP COLUMN IF EXISTS scrape_completed_at,
+DROP COLUMN IF EXISTS scrape_started_at,
+DROP COLUMN IF EXISTS processing_completed_at,
+DROP COLUMN IF EXISTS processing_started_at,
+DROP COLUMN IF EXISTS last_message_type,
+DROP COLUMN IF EXISTS last_message_id,
+DROP COLUMN IF EXISTS correlation_id;
+
+-- Eliminar tablas de tracking de procesamiento (migration 006)
+DROP TABLE IF EXISTS webscraping.page_status_transitions CASCADE;
+DROP TABLE IF EXISTS webscraping.page_processing_history CASCADE;
+DROP TABLE IF EXISTS webscraping.page_statuses CASCADE;
 
 -- Eliminar tablas de metadatos
 DROP TABLE IF EXISTS webscraping.pages CASCADE;
